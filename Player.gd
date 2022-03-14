@@ -1,6 +1,8 @@
 extends Node2D
 class_name Player
 
+onready var cam = get_node("PlayerCamera")
+
 onready var is_selecting := false
 var select_origin : Vector2
 const MIN_SELECT_SIZE := 1.0
@@ -15,14 +17,15 @@ func _ready() -> void:
 func _draw() -> void:
 	if not is_selecting:
 		return
-	var select_rect = Rect2(select_origin, get_viewport().get_mouse_position() - select_origin)
+	var select_rect = Rect2(select_origin, cam.get_global_mouse_position() - select_origin)
 	draw_rect(select_rect, Color.white, false, 1.0)
 
 func _process(delta) -> void:
 	update()
 
 func _unhandled_input(event):
-	var mouse_pos = get_viewport().get_mouse_position()
+	#var mouse_pos = get_viewport().get_mouse_position()
+	var mouse_pos = cam.get_global_mouse_position()
 	if event.is_action("LClick"):
 		if event.is_pressed(): # left click pressed down
 			is_selecting = true
