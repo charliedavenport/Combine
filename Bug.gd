@@ -4,11 +4,20 @@ class_name Bug
 const MOVE_SPEED := 100.0
 const MIN_SPEED := 10.0
 
+enum State {IDLE, MOVING, ATTACKING}
+var curr_state : int
+
 onready var is_selected := false
+onready var sprite = get_node("Sprite")
 onready var selected_sprite = get_node("Selected")
 
+export var is_enemy : bool
+
 var path : Array
-onready var is_moving_along_path := false
+
+func _ready() -> void:
+	if is_enemy:
+		sprite.modulate = Color.red
 
 func _draw() -> void:
 	var last_point = Vector2.ZERO
@@ -22,11 +31,11 @@ func _process(delta) -> void:
 	update()
 
 func _physics_process(delta) -> void:
-	if is_moving_along_path:
+	if curr_state == State.MOVING:
 		move_along_path(MOVE_SPEED)
 
 func select() -> void:
-	if is_selected:
+	if is_selected or is_enemy:
 		return
 	is_selected = true
 	selected_sprite.visible = true
@@ -38,7 +47,7 @@ func deselect() -> void:
 	selected_sprite.visible = false
 
 func start_moving_along_path() -> void:
-	is_moving_along_path = true
+	curr_state = State.MOVING
 
 func move_along_path(_dist) -> void:
 	var last_point = global_position
@@ -59,4 +68,4 @@ func move_along_path(_dist) -> void:
 	# The character reached the end of the path.
 	#global_position = last_point
 	path = []
-	is_moving_along_path = false
+	curr_state = State.IDLE

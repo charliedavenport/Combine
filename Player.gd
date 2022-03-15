@@ -2,37 +2,44 @@ extends Node2D
 class_name Player
 
 onready var cam = get_node("PlayerCamera")
+onready var select_area = get_node("SelectArea")
+onready var select_shape = get_node("SelectArea/CollisionShape2D")
+var select_rect : Rect2
 
 onready var is_selecting := false
 var select_origin : Vector2
 const MIN_SELECT_SIZE := 1.0
 
-signal select_bugs_rect(rect)
-signal select_bug(pos, shift)
+signal player_begin_select
 signal move_bugs_to(pos)
 
 func _ready() -> void:
 	set_process_unhandled_input(true)
+	select_area.set_as_toplevel(true)
 
 func _draw() -> void:
 	if not is_selecting:
 		return
-	var select_rect = Rect2(select_origin, cam.get_global_mouse_position() - select_origin)
 	draw_rect(select_rect, Color.white, false, 1.0)
 
 func _process(delta) -> void:
+	var mouse_pos = cam.get_global_mouse_position()
+	select_rect = Rect2(select_origin, mouse_pos - select_origin).abs()
 	update()
+	if is_selecting:
+		select_shape.shape.set_extents(select_rect.size * 0.5)
+		select_area.position = select_rect.position + (0.5 * select_rect.size)
 
 func _unhandled_input(event):
-	#var mouse_pos = get_viewport().get_mouse_position()
 	var mouse_pos = cam.get_global_mouse_position()
 	if event.is_action("LClick"):
 		if event.is_pressed(): # left click pressed down
 			is_selecting = true
 			select_origin = mouse_pos
+			select_area.monitoring = true
+			emit_signal("player_begin_select")
 		else: # left click released
 			is_selecting = false
-			var select_rect = Rect2(select_origin, mouse_pos - select_origin).abs()
-			emit_signal("select_bugs_rect", select_rect)
+			select_area.monitoring = false
 	elif event.is_action("RClick") and event.is_pressed():
 		emit_signal("move_bugs_to", mouse_pos)

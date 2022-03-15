@@ -66,6 +66,13 @@ cam_zoom_out={
  ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="select"
+2d_physics/layer_2="bug friend"
+2d_physics/layer_3="bug enemy"
+2d_physics/layer_4="level"
+
 [physics]
 
 common/enable_pause_aware_picking=true

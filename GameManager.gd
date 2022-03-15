@@ -5,26 +5,29 @@ onready var player = get_node("Player")
 var selected_bugs : Array
 
 func _ready() -> void:
-	player.connect("select_bugs_rect", self, "on_select_bugs_rect")
-	player.connect("select_bug", self, "on_select_bug")
+	player.connect("player_begin_select", self, "on_player_begin_select")
+	player.select_area.connect("body_entered", self, "on_player_select_body_entered")
+	player.select_area.connect("body_exited", self, "on_player_select_body_exited")
 	player.connect("move_bugs_to", self, "on_move_bugs_to")
 
-func on_select_bugs_rect(_rect) -> void:
-	selected_bugs = []
-	for child in get_children():
-		if child is Bug:
-			child.deselect()
-	for child in get_children():
-		if child is Bug and _rect.has_point(child.global_position):
-			child.select()
-			selected_bugs.append(child)
-#	if selected_bugs.size() > 0:
-#		player.set_state(player.State.BUGS_SELECTED)
-#	else:
-#		player.set_state(player.State.IDLE)
+func on_player_select_body_entered(body) -> void:
+	if not player.is_selecting:
+		return
+	if body is Bug and not body.is_enemy:
+		body.select()
+		selected_bugs.append(body)
 
-func on_select_bug(_pos, _shift) -> void:
-	pass
+func on_player_select_body_exited(body) -> void:
+	if not player.is_selecting:
+		return
+	if body is Bug and not body.is_enemy:
+		body.deselect()
+		selected_bugs.erase(body)
+
+func on_player_begin_select() -> void:
+	for bug in selected_bugs:
+		bug.deselect()
+	selected_bugs = []
 
 func on_move_bugs_to(_pos) -> void:
 	for bug in selected_bugs:
