@@ -2,11 +2,11 @@ extends Camera2D
 
 const SLOW_MARGIN := 75.0
 const FAST_MARGIN := 30.0
-const SLOW_SPEED := 150.0
-const FAST_SPEED := 500.0
+const SLOW_SPEED := 200.0
+const FAST_SPEED := 750.0
 
-const MIN_ZOOM := Vector2(1.0, 1.0)
-const MAX_ZOOM := Vector2(2.5, 2.5)
+const MIN_ZOOM := Vector2(0.75, 0.75)
+const MAX_ZOOM := Vector2(2.0, 2.0)
 const ZOOM_STEP := Vector2(0.25, 0.25)
 
 func _process(delta):

@@ -1,12 +1,12 @@
 extends KinematicBody2D
 class_name Bug
 
-const MOVE_SPEED := 100.0
+const MOVE_SPEED := 200.0
 const MIN_SPEED := 10.0
 const MAX_HP := 100.0
 
-const idle_sprite = preload("res://icon.png")
-const atk_sprite = preload("res://icon_atk.png")
+const enemy_sprite = preload("res://ant.png")
+const friendly_sprite = preload("res://ant_infected.png")
 
 enum State {IDLE, MOVING, ATTACKING}
 var curr_state : int
@@ -26,6 +26,7 @@ var target_bug
 var hp : float
 
 signal bug_killed(_bug)
+signal bug_infected(_bug)
 
 func _ready() -> void:
 	set_enemy(is_enemy)
@@ -45,13 +46,15 @@ func _draw() -> void:
 func set_enemy(_value : bool) -> void:
 	is_enemy = _value
 	if is_enemy:
-		sprite.modulate = Color.red
+		#sprite.modulate = Color.red
 		self.collision_layer = 4 # enemy
 		atk_area.collision_mask = 2 # player
+		sprite.texture = enemy_sprite
 	else:
-		sprite.modulate = Color.white
+		#sprite.modulate = Color.white
 		self.collision_layer = 2 # player
 		atk_area.collision_mask = 4 # enemy
+		sprite.texture = friendly_sprite
 
 func _process(delta) -> void:
 	update()
@@ -77,7 +80,7 @@ func move_along_path(_dist) -> void:
 		if dist_to_next_point > 15.0:
 			var vel = (path[0] - last_point) * (_dist / dist_to_next_point)
 			vel = move_and_slide(vel)
-			if path.size() <= 2 and vel.length() < MIN_SPEED and get_slide_count() > 0:
+			if path.size() <= 1 and vel.length() < MIN_SPEED and get_slide_count() > 0:
 				#print('bug stopping because blocked')
 				break
 			return
@@ -95,8 +98,9 @@ func start_attacking(_target) -> void:
 		return
 	target_bug = _target
 	curr_state = State.ATTACKING
-	sprite.texture = atk_sprite
+#	sprite.texture = atk_sprite
 	target_bug.connect("bug_killed", self, "on_target_killed")
+	target_bug.connect("bug_infected", self, "on_target_killed")
 	print(self.name + " attacking " + target_bug.name)
 	while curr_state == State.ATTACKING:
 		atk_timer.start()
@@ -108,11 +112,16 @@ func start_attacking(_target) -> void:
 func on_target_killed(_bug) -> void:
 	curr_state = State.IDLE
 	target_bug = null
-	sprite.texture = idle_sprite
+#	sprite.texture = idle_sprite
 
 func on_body_entered(body) -> void:
 	if curr_state != State.ATTACKING:
 		start_attacking(body)
+
+func infect() -> void:
+	emit_signal("bug_infected", self)
+	set_enemy(false)
+	#sprite.texture = friendly_sprite
 
 func kill() -> void:
 	print(name + " is killed")
@@ -124,7 +133,8 @@ func damage(_value : float) -> void:
 	anim.play("flash")
 	hp -= _value
 	if hp <= 0:
-		kill()
+		#kill()
+		infect()
 
 func on_flash_anim_end() -> void:
 	anim.play("idle")

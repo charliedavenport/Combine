@@ -14,6 +14,7 @@ func _ready() -> void:
 	for child in get_children():
 		if child is Bug:
 			child.connect("bug_killed", self, "on_bug_killed")
+			child.connect("bug_infected", self, "on_bug_infected")
 			if child.is_enemy:
 				enemy_bugs.append(child)
 				child.connect("mouse_entered", self, "on_enemy_mouse_entered", [child])
@@ -68,3 +69,5 @@ func on_bug_killed(_bug) -> void:
 	if _bug.is_enemy:
 		enemy_bugs.erase(_bug)
 
+func on_bug_infected(_bug) -> void:
+	pass
