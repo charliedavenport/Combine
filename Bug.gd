@@ -33,6 +33,7 @@ func _ready() -> void:
 	atk_area.connect("body_entered", self, "on_body_entered")
 	atk_timer.wait_time = atk_rate
 	anim.play("idle")
+	sprite.material.set_shader_param("outline_width", 0)
 	hp = MAX_HP
 
 func _draw() -> void:
@@ -67,7 +68,8 @@ func set_state(_value) -> void:
 	pass # TODO
 
 func highlight(_value : bool) -> void:
-	selected_sprite.visible = _value
+	sprite.material.set_shader_param("outline_width", 10 if _value else 0)
+	#selected_sprite.visible = _value
 
 func start_moving_along_path() -> void:
 	curr_state = State.MOVING
@@ -99,7 +101,7 @@ func start_attacking(_target) -> void:
 	target_bug = _target
 	curr_state = State.ATTACKING
 #	sprite.texture = atk_sprite
-	target_bug.connect("bug_killed", self, "on_target_killed")
+	#target_bug.connect("bug_killed", self, "on_target_killed")
 	target_bug.connect("bug_infected", self, "on_target_killed")
 	print(self.name + " attacking " + target_bug.name)
 	while curr_state == State.ATTACKING:
