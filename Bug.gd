@@ -1,7 +1,7 @@
 extends KinematicBody2D
 class_name Bug
 
-const MOVE_SPEED := 200.0
+const MOVE_SPEED := 150.0
 const MIN_SPEED := 10.0
 const MAX_HP := 100.0
 
@@ -17,10 +17,12 @@ onready var atk_area = get_node("AttackableArea")
 onready var atk_timer = get_node("AtkTimer")
 onready var anim = get_node("AnimationPlayer")
 onready var particles = get_node("CPUParticles2D")
+onready var bug_gui = get_node("BugGUI")
 
 export var is_enemy : bool
 export var atk_damage := 10.0
 export var atk_rate := 1.0
+export var draw_path := false
 
 var path : Array
 var target_bug
@@ -47,6 +49,7 @@ func _draw() -> void:
 
 func set_enemy(_value : bool) -> void:
 	is_enemy = _value
+	bug_gui.set_enemy(is_enemy)
 	if is_enemy:
 		#sprite.modulate = Color.red
 		self.collision_layer = 4 # enemy
@@ -61,7 +64,8 @@ func set_enemy(_value : bool) -> void:
 		particles.emitting = true
 
 func _process(delta) -> void:
-	update()
+	if draw_path:
+		update()
 
 func _physics_process(delta) -> void:
 	if curr_state == State.MOVING:
@@ -84,6 +88,7 @@ func move_along_path(_dist) -> void:
 		# The position to move to falls between two points.
 		if dist_to_next_point > 15.0:
 			var vel = (path[0] - last_point) * (_dist / dist_to_next_point)
+			sprite.flip_h = (vel.x < 0)
 			vel = move_and_slide(vel)
 			if path.size() <= 1 and vel.length() < MIN_SPEED and get_slide_count() > 0:
 				#print('bug stopping because blocked')
@@ -124,6 +129,8 @@ func on_body_entered(body) -> void:
 		start_attacking(body)
 
 func infect() -> void:
+	hp = 100.0
+	bug_gui.set_hp(hp)
 	emit_signal("bug_infected", self)
 	set_enemy(false)
 	#sprite.texture = friendly_sprite
@@ -137,6 +144,7 @@ func damage(_value : float) -> void:
 	#print(name + " is damaged for " + str(_value))
 	anim.play("flash")
 	hp -= _value
+	bug_gui.set_hp(hp)
 	if hp <= 0:
 		#kill()
 		infect()

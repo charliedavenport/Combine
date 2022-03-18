@@ -70,4 +70,6 @@ func on_bug_killed(_bug) -> void:
 		enemy_bugs.erase(_bug)
 
 func on_bug_infected(_bug) -> void:
-	pass
+	if _bug == selected_enemy:
+		selected_enemy = null
+		_bug.highlight(false)
