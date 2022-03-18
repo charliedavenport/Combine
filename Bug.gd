@@ -16,6 +16,7 @@ onready var selected_sprite = get_node("Selected")
 onready var atk_area = get_node("AttackableArea")
 onready var atk_timer = get_node("AtkTimer")
 onready var anim = get_node("AnimationPlayer")
+onready var particles = get_node("CPUParticles2D")
 
 export var is_enemy : bool
 export var atk_damage := 10.0
@@ -51,11 +52,13 @@ func set_enemy(_value : bool) -> void:
 		self.collision_layer = 4 # enemy
 		atk_area.collision_mask = 2 # player
 		sprite.texture = enemy_sprite
+		particles.emitting = false
 	else:
 		#sprite.modulate = Color.white
 		self.collision_layer = 2 # player
 		atk_area.collision_mask = 4 # enemy
 		sprite.texture = friendly_sprite
+		particles.emitting = true
 
 func _process(delta) -> void:
 	update()
@@ -131,7 +134,7 @@ func kill() -> void:
 	queue_free()
 
 func damage(_value : float) -> void:
-	print(name + " is damaged for " + str(_value))
+	#print(name + " is damaged for " + str(_value))
 	anim.play("flash")
 	hp -= _value
 	if hp <= 0:

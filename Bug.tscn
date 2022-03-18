@@ -1,9 +1,10 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Bug.gd" type="Script" id=1]
 [ext_resource path="res://ant_infected.png" type="Texture" id=2]
 [ext_resource path="res://white.png" type="Texture" id=3]
 [ext_resource path="res://flash.shader" type="Shader" id=4]
+[ext_resource path="res://spore.png" type="Texture" id=5]
 
 [sub_resource type="ShaderMaterial" id=5]
 resource_local_to_scene = true
@@ -81,6 +82,11 @@ tracks/0/keys = {
 "values": [ 0.0 ]
 }
 
+[sub_resource type="Curve" id=7]
+min_value = -360.0
+max_value = 360.0
+_data = [ Vector2( 0, -23.7273 ), 0.0, 102.713, 0, 0, Vector2( 0.990196, 48.2727 ), 60.6942, 0.0, 0, 0 ]
+
 [node name="Bug" type="KinematicBody2D"]
 collision_layer = 2
 collision_mask = 6
@@ -115,3 +121,16 @@ shape = SubResource( 2 )
 anims/RESET = SubResource( 6 )
 anims/flash = SubResource( 3 )
 anims/idle = SubResource( 4 )
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+texture = ExtResource( 5 )
+emission_shape = 1
+emission_sphere_radius = 76.0
+spread = 180.0
+gravity = Vector2( 0, 0 )
+initial_velocity = 10.0
+angle = 360.0
+angle_random = 1.0
+angle_curve = SubResource( 7 )
+scale_amount = 0.02
+scale_amount_random = 0.03
