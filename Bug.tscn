@@ -1,7 +1,7 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://Bug.gd" type="Script" id=1]
-[ext_resource path="res://ant_infected.png" type="Texture" id=2]
+[ext_resource path="res://ant_infected_spritesheet.png" type="Texture" id=2]
 [ext_resource path="res://white.png" type="Texture" id=3]
 [ext_resource path="res://flash.shader" type="Shader" id=4]
 [ext_resource path="res://spore.png" type="Texture" id=5]
@@ -39,6 +39,18 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 0,
 "values": [ 0.0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0 ]
 }
 
 [sub_resource type="Animation" id=3]
@@ -84,6 +96,36 @@ tracks/0/keys = {
 "update": 0,
 "values": [ 0.0 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=8]
+resource_name = "walk"
+length = 0.5
+loop = true
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.25 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 1, 2 ]
+}
 
 [sub_resource type="Curve" id=7]
 min_value = -360.0
@@ -101,6 +143,7 @@ material = SubResource( 5 )
 scale = Vector2( 0.20284, 0.20284 )
 texture = ExtResource( 2 )
 offset = Vector2( 5, 0 )
+hframes = 3
 
 [node name="Selected" type="Sprite" parent="."]
 visible = false
@@ -124,6 +167,7 @@ shape = SubResource( 2 )
 anims/RESET = SubResource( 6 )
 anims/flash = SubResource( 3 )
 anims/idle = SubResource( 4 )
+anims/walk = SubResource( 8 )
 
 [node name="CPUParticles2D" type="CPUParticles2D" parent="."]
 texture = ExtResource( 5 )

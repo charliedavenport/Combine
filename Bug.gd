@@ -5,8 +5,8 @@ const MOVE_SPEED := 150.0
 const MIN_SPEED := 10.0
 const MAX_HP := 100.0
 
-const enemy_sprite = preload("res://ant.png")
-const friendly_sprite = preload("res://ant_infected.png")
+const enemy_sprite = preload("res://ant_spritesheet.png")
+const friendly_sprite = preload("res://ant_infected_spritesheet.png")
 
 enum State {IDLE, MOVING, ATTACKING}
 var curr_state : int
@@ -80,6 +80,7 @@ func highlight(_value : bool) -> void:
 
 func start_moving_along_path() -> void:
 	curr_state = State.MOVING
+	anim.play("walk")
 
 func move_along_path(_dist) -> void:
 	var last_point = global_position
@@ -102,10 +103,12 @@ func move_along_path(_dist) -> void:
 	#global_position = last_point
 	path = []
 	curr_state = State.IDLE
+	anim.play("idle")
 
 func start_attacking(_target) -> void:
 	if is_enemy:
 		return
+	anim.play("idle")
 	target_bug = _target
 	curr_state = State.ATTACKING
 #	sprite.texture = atk_sprite
