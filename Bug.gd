@@ -36,7 +36,7 @@ func _ready() -> void:
 	atk_area.connect("body_entered", self, "on_body_entered")
 	atk_timer.wait_time = atk_rate
 	anim.play("idle")
-	sprite.material.set_shader_param("outline_width", 0)
+	sprite.material.set_shader_param("line_thickness", 0)
 	hp = MAX_HP
 
 func _draw() -> void:
@@ -51,13 +51,11 @@ func set_enemy(_value : bool) -> void:
 	is_enemy = _value
 	bug_gui.set_enemy(is_enemy)
 	if is_enemy:
-		#sprite.modulate = Color.red
 		self.collision_layer = 4 # enemy
 		atk_area.collision_mask = 2 # player
 		sprite.texture = enemy_sprite
 		particles.emitting = false
 	else:
-		#sprite.modulate = Color.white
 		self.collision_layer = 2 # player
 		atk_area.collision_mask = 4 # enemy
 		sprite.texture = friendly_sprite
@@ -75,8 +73,7 @@ func set_state(_value) -> void:
 	pass # TODO
 
 func highlight(_value : bool) -> void:
-	sprite.material.set_shader_param("outline_width", 10 if _value else 0)
-	#selected_sprite.visible = _value
+	sprite.material.set_shader_param("line_thickness", 10 if _value else 0)
 
 func start_moving_along_path() -> void:
 	curr_state = State.MOVING
@@ -113,14 +110,15 @@ func start_attacking(_target) -> void:
 	curr_state = State.ATTACKING
 #	sprite.texture = atk_sprite
 	#target_bug.connect("bug_killed", self, "on_target_killed")
-	target_bug.connect("bug_infected", self, "on_target_killed")
+	if not target_bug.is_connected("bug_infected", self, "on_target_killed"):
+		target_bug.connect("bug_infected", self, "on_target_killed")
 	print(self.name + " attacking " + target_bug.name)
 	while curr_state == State.ATTACKING:
 		atk_timer.start()
 		yield(atk_timer, "timeout")
 		if curr_state != State.ATTACKING:
 			return
-		target_bug.damage(atk_damage)
+		target_bug.damage(atk_damage, self)
 
 func on_target_killed(_bug) -> void:
 	curr_state = State.IDLE
@@ -136,14 +134,13 @@ func infect() -> void:
 	bug_gui.set_hp(hp)
 	emit_signal("bug_infected", self)
 	set_enemy(false)
-	#sprite.texture = friendly_sprite
 
 func kill() -> void:
 	print(name + " is killed")
 	emit_signal("bug_killed", self)
 	queue_free()
 
-func damage(_value : float) -> void:
+func damage(_value : float, _source) -> void:
 	#print(name + " is damaged for " + str(_value))
 	anim.play("flash")
 	hp -= _value

@@ -20,6 +20,7 @@ navpoly = SubResource( 1 )
 
 [node name="LevelSprite" type="Sprite" parent="."]
 position = Vector2( 2048, 2048 )
+scale = Vector2( 2, 2 )
 z_index = -3
 texture = ExtResource( 6 )
 
