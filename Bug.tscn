@@ -152,6 +152,7 @@ texture = ExtResource( 3 )
 shape = SubResource( 1 )
 
 [node name="AttackableArea" type="Area2D" parent="."]
+collision_layer = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackableArea"]
 modulate = Color( 1, 0, 0, 0.560784 )
@@ -200,3 +201,18 @@ value = 100.0
 texture_under = ExtResource( 7 )
 texture_progress = ExtResource( 6 )
 nine_patch_stretch = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EnemyVisionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="EnemyVisionArea"]
+modulate = Color( 1, 1, 1, 0.356863 )
+scale = Vector2( 2, 2 )
+polygon = PoolVector2Array( 0, 256, 128, 240, 256, 168, 320, 96, 352, 32, 352, -32, 320, -96, 256, -160, 128, -240, 0, -256 )
+
+[node name="EnemyPatrolPoints" type="Node2D" parent="."]

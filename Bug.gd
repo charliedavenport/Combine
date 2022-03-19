@@ -18,8 +18,10 @@ onready var atk_timer = get_node("AtkTimer")
 onready var anim = get_node("AnimationPlayer")
 onready var particles = get_node("CPUParticles2D")
 onready var bug_gui = get_node("BugGUI")
+onready var enemy_vision = get_node("EnemyVisionArea")
 
 export var is_enemy : bool
+export var is_enemy_patrol : bool
 export var atk_damage := 10.0
 export var atk_rate := 1.0
 export var draw_path := false
@@ -30,6 +32,7 @@ var hp : float
 
 signal bug_killed(_bug)
 signal bug_infected(_bug)
+signal bug_path_request(_bug, pos)
 
 func _ready() -> void:
 	set_enemy(is_enemy)
@@ -53,13 +56,22 @@ func set_enemy(_value : bool) -> void:
 	if is_enemy:
 		self.collision_layer = 4 # enemy
 		atk_area.collision_mask = 2 # player
+		enemy_vision.collision_mask = 2
 		sprite.texture = enemy_sprite
 		particles.emitting = false
+		enemy_vision.monitoring = true
+		if not enemy_vision.is_connected("body_entered", self, "on_enemy_vision_body_entered"):
+			enemy_vision.connect("body_entered", self, "on_enemy_vision_body_entered")
 	else:
 		self.collision_layer = 2 # player
 		atk_area.collision_mask = 4 # enemy
+		enemy_vision.collision_mask = 0
+		enemy_vision.visible = false
 		sprite.texture = friendly_sprite
 		particles.emitting = true
+		enemy_vision.monitoring = false
+		if enemy_vision.is_connected("body_entered", self, "on_enemy_vision_body_entered"):
+			enemy_vision.disconnect("body_entered", self, "on_enemy_vision_body_entered")
 
 func _process(delta) -> void:
 	if draw_path:
@@ -87,31 +99,32 @@ func move_along_path(_dist) -> void:
 		if dist_to_next_point > 15.0:
 			var vel = (path[0] - last_point) * (_dist / dist_to_next_point)
 			sprite.flip_h = (vel.x < 0)
+			enemy_vision.scale.x = -1 if (vel.x < 0) else 1
 			vel = move_and_slide(vel)
-			if path.size() <= 1 and vel.length() < MIN_SPEED and get_slide_count() > 0:
-				#print('bug stopping because blocked')
-				break
+#			if path.size() <= 1 and vel.length() < MIN_SPEED and get_slide_count() > 0:
+#				#print('bug stopping because blocked')
+#				break
 			return
 		# The position is past the end of the segment.
 		_dist -= dist_to_next_point
 		last_point = path[0]
 		path.remove(0)
 	# The character reached the end of the path.
-	#global_position = last_point
 	path = []
 	curr_state = State.IDLE
 	anim.play("idle")
 
 func start_attacking(_target) -> void:
-	if is_enemy:
-		return
+#	if is_enemy:
+#		return
 	anim.play("idle")
 	target_bug = _target
 	curr_state = State.ATTACKING
 #	sprite.texture = atk_sprite
-	#target_bug.connect("bug_killed", self, "on_target_killed")
-	if not target_bug.is_connected("bug_infected", self, "on_target_killed"):
+	if not is_enemy and not target_bug.is_connected("bug_infected", self, "on_target_killed"):
 		target_bug.connect("bug_infected", self, "on_target_killed")
+	elif is_enemy and not target_bug.is_connected("bug_killed", self, "on_target_killed"):
+		target_bug.connect("bug_killed", self, "on_target_killed")
 	print(self.name + " attacking " + target_bug.name)
 	while curr_state == State.ATTACKING:
 		atk_timer.start()
@@ -134,6 +147,7 @@ func infect() -> void:
 	bug_gui.set_hp(hp)
 	emit_signal("bug_infected", self)
 	set_enemy(false)
+	curr_state = State.IDLE
 
 func kill() -> void:
 	print(name + " is killed")
@@ -146,8 +160,10 @@ func damage(_value : float, _source) -> void:
 	hp -= _value
 	bug_gui.set_hp(hp)
 	if hp <= 0:
-		#kill()
-		infect()
+		infect() if is_enemy else kill()
 
 func on_flash_anim_end() -> void:
 	anim.play("idle")
+
+func on_enemy_vision_body_entered(_body) -> void:
+	emit_signal("bug_path_request", self, _body.global_position)

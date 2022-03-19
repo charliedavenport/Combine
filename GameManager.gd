@@ -2,6 +2,7 @@ extends Navigation2D
 class_name GameManager
 
 onready var player = get_node("Player")
+
 var selected_bugs : Array
 var enemy_bugs : Array
 var selected_enemy
@@ -15,6 +16,7 @@ func _ready() -> void:
 		if child is Bug:
 			child.connect("bug_killed", self, "on_bug_killed")
 			child.connect("bug_infected", self, "on_bug_infected")
+			child.connect("bug_path_request", self, "on_bug_path_request")
 			if child.is_enemy:
 				enemy_bugs.append(child)
 				child.connect("mouse_entered", self, "on_enemy_mouse_entered", [child])
@@ -68,8 +70,16 @@ func on_enemy_mouse_exited(_bug) -> void:
 func on_bug_killed(_bug) -> void:
 	if _bug.is_enemy:
 		enemy_bugs.erase(_bug)
+	else:
+		selected_bugs.erase(_bug)
 
 func on_bug_infected(_bug) -> void:
+	enemy_bugs.erase(_bug)
 	if _bug == selected_enemy:
 		selected_enemy = null
 		_bug.highlight(false)
+
+func on_bug_path_request(_bug, _pos) -> void:
+	var path = get_simple_path(_bug.global_position, _pos, true)
+	_bug.path = path
+	_bug.start_moving_along_path()
