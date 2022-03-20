@@ -4,7 +4,7 @@ class_name Bug
 const MOVE_SPEED := 150.0
 const MIN_SPEED := 10.0
 const MAX_HP := 100.0
-const ENEMY_REACTION_TIME := 0.2
+const ENEMY_REACTION_TIME := 0.5
 
 const enemy_sprite = preload("res://ant_spritesheet.png")
 const friendly_sprite = preload("res://ant_infected_spritesheet.png")
@@ -14,12 +14,14 @@ var curr_state : int
 
 onready var sprite = get_node("Sprite")
 onready var selected_sprite = get_node("Selected")
+onready var infect_area = get_node("InfectArea")
 onready var atk_area = get_node("AttackableArea")
 onready var atk_timer = get_node("AtkTimer")
 onready var anim = get_node("AnimationPlayer")
 onready var particles = get_node("CPUParticles2D")
 onready var bug_gui = get_node("BugGUI")
 onready var enemy_vision = get_node("EnemyVisionArea")
+onready var tween = get_node("Tween")
 
 export var is_enemy : bool
 export var is_enemy_patrol : bool
@@ -65,6 +67,7 @@ func set_enemy(_value : bool) -> void:
 		sprite.texture = enemy_sprite
 		particles.emitting = false
 		enemy_vision.monitoring = true
+		
 		if not enemy_vision.is_connected("body_entered", self, "on_enemy_vision_body_entered"):
 			enemy_vision.connect("body_entered", self, "on_enemy_vision_body_entered")
 	else:
@@ -146,6 +149,7 @@ func on_atk_body_entered(_body) -> void:
 
 func on_atk_body_exited(_body) -> void:
 	if is_enemy and is_instance_valid(target_bug) and target_bug:
+		yield(get_tree().create_timer(ENEMY_REACTION_TIME), "timeout")
 		start_chasing(target_bug)
 	else:
 		stop_attacking()
@@ -169,14 +173,16 @@ func kill() -> void:
 
 func damage(_value : float, _source) -> void:
 	#print(name + " is damaged for " + str(_value))
-	anim.play("flash")
+	flash()
 	hp -= _value
 	bug_gui.set_hp(hp)
 	if hp <= 0:
 		infect() if is_enemy else kill()
 
-func on_flash_anim_end() -> void:
-	anim.play("idle")
+func flash() -> void:
+	tween.interpolate_property(sprite.get_material(), "shader_param/flash_amount", 
+			1.0, 0.0, 0.5)
+	tween.start()
 
 func start_chasing(_bug) -> void:
 	emit_signal("bug_path_request", self, _bug.global_position)

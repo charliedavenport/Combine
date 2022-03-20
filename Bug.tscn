@@ -20,6 +20,9 @@ shader_param/line_thickness = 7.0
 [sub_resource type="CircleShape2D" id=1]
 radius = 38.0
 
+[sub_resource type="CircleShape2D" id=10]
+radius = 192.0
+
 [sub_resource type="CircleShape2D" id=2]
 radius = 76.0263
 
@@ -60,35 +63,6 @@ tracks/2/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ false ]
-}
-
-[sub_resource type="Animation" id=3]
-resource_name = "flash"
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:material:shader_param/flash_amount")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 0,
-"values": [ 1.0, 0.0 ]
-}
-tracks/1/type = "method"
-tracks/1/path = NodePath(".")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 1 ),
-"transitions": PoolRealArray( 1 ),
-"values": [ {
-"args": [  ],
-"method": "on_flash_anim_end"
-} ]
 }
 
 [sub_resource type="Animation" id=4]
@@ -173,7 +147,6 @@ collision_layer = 2
 collision_mask = 6
 input_pickable = true
 script = ExtResource( 1 )
-draw_path = true
 
 [node name="Sprite" type="Sprite" parent="."]
 material = SubResource( 5 )
@@ -191,8 +164,17 @@ texture = ExtResource( 3 )
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
 
+[node name="InfectArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InfectArea"]
+modulate = Color( 0.101961, 0.956863, 0.0313726, 1 )
+shape = SubResource( 10 )
+
 [node name="AttackableArea" type="Area2D" parent="."]
 collision_layer = 0
+monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackableArea"]
 modulate = Color( 1, 0, 0, 0.560784 )
@@ -203,7 +185,6 @@ shape = SubResource( 2 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 6 )
-anims/flash = SubResource( 3 )
 anims/idle = SubResource( 4 )
 anims/kill = SubResource( 9 )
 anims/walk = SubResource( 8 )
@@ -257,3 +238,5 @@ scale = Vector2( 2, 2 )
 polygon = PoolVector2Array( 0, 256, 128, 240, 256, 168, 320, 96, 352, 32, 352, -32, 320, -96, 256, -160, 128, -240, 0, -256 )
 
 [node name="EnemyPatrolPoints" type="Node2D" parent="."]
+
+[node name="Tween" type="Tween" parent="."]
