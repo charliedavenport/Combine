@@ -21,10 +21,15 @@ shader_param/line_thickness = 7.0
 radius = 38.0
 
 [sub_resource type="CircleShape2D" id=10]
-radius = 192.0
+radius = 128.0
 
 [sub_resource type="CircleShape2D" id=2]
 radius = 76.0263
+
+[sub_resource type="Curve" id=7]
+min_value = -360.0
+max_value = 360.0
+_data = [ Vector2( 0, -23.7273 ), 0.0, 102.713, 0, 0, Vector2( 0.990196, 48.2727 ), 60.6942, 0.0, 0, 0 ]
 
 [sub_resource type="Animation" id=6]
 length = 0.001
@@ -137,11 +142,6 @@ tracks/0/keys = {
 "values": [ 1, 2 ]
 }
 
-[sub_resource type="Curve" id=7]
-min_value = -360.0
-max_value = 360.0
-_data = [ Vector2( 0, -23.7273 ), 0.0, 102.713, 0, 0, Vector2( 0.990196, 48.2727 ), 60.6942, 0.0, 0, 0 ]
-
 [node name="Bug" type="KinematicBody2D"]
 collision_layer = 2
 collision_mask = 6
@@ -181,22 +181,11 @@ modulate = Color( 1, 0, 0, 0.560784 )
 position = Vector2( -2, -2 )
 shape = SubResource( 2 )
 
-[node name="AtkTimer" type="Timer" parent="."]
-
-[node name="FlipHTimer" type="Timer" parent="."]
-wait_time = 0.5
-one_shot = true
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/RESET = SubResource( 6 )
-anims/idle = SubResource( 4 )
-anims/kill = SubResource( 9 )
-anims/walk = SubResource( 8 )
-
 [node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+amount = 16
 texture = ExtResource( 5 )
 emission_shape = 1
-emission_sphere_radius = 76.0
+emission_sphere_radius = 128.0
 spread = 180.0
 gravity = Vector2( 0, 0 )
 initial_velocity = 10.0
@@ -206,9 +195,28 @@ angle_curve = SubResource( 7 )
 scale_amount = 0.02
 scale_amount_random = 0.03
 
+[node name="AtkTimer" type="Timer" parent="."]
+
+[node name="FlipHTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="InfectTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="EnemyReactionTimer" type="Timer" parent="."]
+
+[node name="PathUpdateTimer" type="Timer" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 6 )
+anims/idle = SubResource( 4 )
+anims/kill = SubResource( 9 )
+anims/walk = SubResource( 8 )
+
 [node name="BugGUI" type="Control" parent="."]
 margin_left = -70.0
-margin_top = -62.0
+margin_top = -72.0
 margin_right = 70.0
 margin_bottom = 58.0
 mouse_filter = 2
@@ -217,13 +225,27 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TextureProgress" type="TextureProgress" parent="BugGUI"]
+[node name="HealthBar" type="TextureProgress" parent="BugGUI"]
 anchor_right = 1.0
 margin_left = 31.0
 margin_right = -31.0
 margin_bottom = 7.0
 mouse_filter = 2
 value = 100.0
+texture_under = ExtResource( 7 )
+texture_progress = ExtResource( 6 )
+nine_patch_stretch = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="InfectBar" type="TextureProgress" parent="BugGUI"]
+anchor_right = 1.0
+margin_left = 31.0
+margin_top = 8.0
+margin_right = -31.0
+margin_bottom = 16.0
+mouse_filter = 2
 texture_under = ExtResource( 7 )
 texture_progress = ExtResource( 6 )
 nine_patch_stretch = true
