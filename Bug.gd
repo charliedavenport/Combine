@@ -17,6 +17,7 @@ onready var selected_sprite = get_node("Selected")
 onready var infect_area = get_node("InfectArea")
 onready var atk_area = get_node("AttackableArea")
 onready var atk_timer = get_node("AtkTimer")
+onready var flip_h_timer = get_node("FlipHTimer")
 onready var anim = get_node("AnimationPlayer")
 onready var particles = get_node("CPUParticles2D")
 onready var bug_gui = get_node("BugGUI")
@@ -67,7 +68,7 @@ func set_enemy(_value : bool) -> void:
 		sprite.texture = enemy_sprite
 		particles.emitting = false
 		enemy_vision.monitoring = true
-		
+		infect_area.monitoring = false
 		if not enemy_vision.is_connected("body_entered", self, "on_enemy_vision_body_entered"):
 			enemy_vision.connect("body_entered", self, "on_enemy_vision_body_entered")
 	else:
@@ -78,6 +79,7 @@ func set_enemy(_value : bool) -> void:
 		sprite.texture = friendly_sprite
 		particles.emitting = true
 		enemy_vision.monitoring = false
+		infect_area.monitoring = true
 		if enemy_vision.is_connected("body_entered", self, "on_enemy_vision_body_entered"):
 			enemy_vision.disconnect("body_entered", self, "on_enemy_vision_body_entered")
 
@@ -100,6 +102,9 @@ func highlight(_value : bool) -> void:
 func start_moving_along_path() -> void:
 	curr_state = State.MOVING
 	anim.play("walk")
+	# flip left or right
+	if path.size() >= 1:
+		is_facing_left = path[1].x < global_position.x
 
 func move_along_path(_dist) -> void:
 	var last_point = global_position
@@ -114,7 +119,9 @@ func move_along_path(_dist) -> void:
 			for b in bods:
 				if b.is_enemy != is_enemy:
 					start_attacking(b)
-			is_facing_left = (vel.x < 0)
+			if flip_h_timer.is_stopped():
+				is_facing_left = (vel.x < 0)
+				flip_h_timer.start()
 			return
 		# The position is past the end of the segment.
 		_dist -= dist_to_next_point
@@ -190,6 +197,8 @@ func flash() -> void:
 	tween.start()
 
 func start_chasing(_bug) -> void:
+	if not is_instance_valid(_bug):
+		return
 	emit_signal("bug_path_request", self, _bug.global_position)
 	is_enemy_chasing = true
 	while is_enemy_chasing:

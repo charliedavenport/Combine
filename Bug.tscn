@@ -183,6 +183,10 @@ shape = SubResource( 2 )
 
 [node name="AtkTimer" type="Timer" parent="."]
 
+[node name="FlipHTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 6 )
 anims/idle = SubResource( 4 )
