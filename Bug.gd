@@ -44,6 +44,7 @@ var infect_level : float
 var is_enemy_chasing : bool
 var nearby_infected : Array
 var is_being_infected : bool
+var is_dead : bool
 
 signal bug_killed(_bug)
 signal bug_infected(_bug)
@@ -63,6 +64,7 @@ func _ready() -> void:
 	hp = MAX_HP
 	infect_level = 0
 	is_enemy_chasing = false
+	is_dead = false
 	particles.emission_sphere_radius = infect_area.get_node("CollisionShape2D").shape.radius
 	nearby_infected = []
 	spread_infection()
@@ -191,7 +193,8 @@ func on_atk_body_exited(_body) -> void:
 		enemy_reaction_timer.start()
 		yield(enemy_reaction_timer, "timeout")
 		#yield(get_tree().create_timer(ENEMY_REACTION_TIME), "timeout")
-		start_chasing(target_bug)
+		if is_instance_valid(target_bug) and target_bug and not is_dead:
+			start_chasing(target_bug)
 	else:
 		stop_attacking()
 
@@ -214,9 +217,22 @@ func infect() -> void:
 	curr_state = State.IDLE
 
 func kill() -> void:
+	curr_state = State.IDLE
+	is_dead = true
 	print(name + " is killed")
 	emit_signal("bug_killed", self)
-	queue_free()
+	anim.play("kill")
+	collision_layer = 0
+	get_node("CollisionShape2D").disabled = true
+	sprite.material.set_shader_param("line_thickness", 0)
+	infect_area.monitoring = false
+	atk_area.monitoring = false
+	particles.emitting = false
+	enemy_vision.monitoring = false
+	bug_gui.visible = false
+	set_process(false)
+	set_physics_process(false)
+	#queue_free()
 
 func damage(_value : float) -> void:
 	#print(name + " is damaged for " + str(_value))

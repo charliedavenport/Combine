@@ -112,7 +112,7 @@ tracks/2/keys = {
 [sub_resource type="Animation" id=9]
 resource_name = "kill"
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:flip_v")
+tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -121,7 +121,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ true ]
+"values": [ 3 ]
 }
 
 [sub_resource type="Animation" id=8]
@@ -153,7 +153,7 @@ material = SubResource( 5 )
 scale = Vector2( 0.20284, 0.20284 )
 texture = ExtResource( 2 )
 offset = Vector2( 5, 0 )
-hframes = 3
+hframes = 4
 
 [node name="Selected" type="Sprite" parent="."]
 visible = false
@@ -180,6 +180,16 @@ monitorable = false
 modulate = Color( 1, 0, 0, 0.560784 )
 position = Vector2( -2, -2 )
 shape = SubResource( 2 )
+
+[node name="EnemyVisionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="EnemyVisionArea"]
+modulate = Color( 1, 1, 1, 0.356863 )
+scale = Vector2( 2, 2 )
+polygon = PoolVector2Array( 0, 256, 128, 240, 256, 168, 320, 96, 352, 32, 352, -32, 320, -96, 256, -160, 128, -240, 0, -256 )
 
 [node name="CPUParticles2D" type="CPUParticles2D" parent="."]
 amount = 16
@@ -252,16 +262,6 @@ nine_patch_stretch = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="EnemyVisionArea" type="Area2D" parent="."]
-collision_layer = 0
-collision_mask = 4
-monitorable = false
-
-[node name="CollisionShape2D" type="CollisionPolygon2D" parent="EnemyVisionArea"]
-modulate = Color( 1, 1, 1, 0.356863 )
-scale = Vector2( 2, 2 )
-polygon = PoolVector2Array( 0, 256, 128, 240, 256, 168, 320, 96, 352, 32, 352, -32, 320, -96, 256, -160, 128, -240, 0, -256 )
 
 [node name="EnemyPatrolPoints" type="Node2D" parent="."]
 

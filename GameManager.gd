@@ -25,7 +25,7 @@ func _ready() -> void:
 func on_player_select_body_entered(body) -> void:
 	if not player.is_selecting:
 		return
-	if body is Bug and not body.is_enemy:
+	if body is Bug and not body.is_enemy and not body.is_dead:
 		body.highlight(true)
 		selected_bugs.append(body)
 
