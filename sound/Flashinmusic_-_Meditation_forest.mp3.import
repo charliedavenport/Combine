@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Flashinmusic_-_Meditation_forest.mp3-30bb6ef4afe38e03d01c975e2f0642fd.mp3str"
+
+[deps]
+
+source_file="res://sound/Flashinmusic_-_Meditation_forest.mp3"
+dest_files=[ "res://.import/Flashinmusic_-_Meditation_forest.mp3-30bb6ef4afe38e03d01c975e2f0642fd.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0
