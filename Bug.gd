@@ -4,6 +4,7 @@ class_name Bug
 const MOVE_SPEED := 150.0
 const MIN_SPEED := 10.0
 const MAX_HP := 100.0
+const ENEMY_REACTION_TIME := 0.2
 
 const enemy_sprite = preload("res://ant_spritesheet.png")
 const friendly_sprite = preload("res://ant_infected_spritesheet.png")
@@ -30,6 +31,7 @@ export var is_facing_left : bool
 var path : Array
 var target_bug
 var hp : float
+var is_enemy_chasing : bool
 
 signal bug_killed(_bug)
 signal bug_infected(_bug)
@@ -43,6 +45,7 @@ func _ready() -> void:
 	anim.play("idle")
 	sprite.material.set_shader_param("line_thickness", 0)
 	hp = MAX_HP
+	is_enemy_chasing = false
 
 func _draw() -> void:
 	var last_point = Vector2.ZERO
@@ -80,10 +83,10 @@ func _process(delta) -> void:
 		update()
 
 func _physics_process(delta) -> void:
-	if curr_state == State.MOVING:
-		move_along_path(MOVE_SPEED)
 	sprite.flip_h = is_facing_left
 	enemy_vision.scale.x = -1 if is_facing_left else 1
+	if curr_state == State.MOVING:
+		move_along_path(MOVE_SPEED)
 
 func set_state(_value) -> void:
 	pass # TODO
@@ -102,13 +105,8 @@ func move_along_path(_dist) -> void:
 		# The position to move to falls between two points.
 		if dist_to_next_point > 15.0:
 			var vel = (path[0] - last_point) * (_dist / dist_to_next_point)
-#			sprite.flip_h = (vel.x < 0)
-#			enemy_vision.scale.x = -1 if (vel.x < 0) else 1
 			vel = move_and_slide(vel)
 			is_facing_left = (vel.x < 0)
-#			if path.size() <= 1 and vel.length() < MIN_SPEED and get_slide_count() > 0:
-#				#print('bug stopping because blocked')
-#				break
 			return
 		# The position is past the end of the segment.
 		_dist -= dist_to_next_point
@@ -120,8 +118,6 @@ func move_along_path(_dist) -> void:
 	anim.play("idle")
 
 func start_attacking(_target) -> void:
-#	if is_enemy:
-#		return
 	anim.play("idle")
 	target_bug = _target
 	curr_state = State.ATTACKING
@@ -144,11 +140,15 @@ func on_target_killed(_bug) -> void:
 #	sprite.texture = idle_sprite
 
 func on_atk_body_entered(_body) -> void:
+	is_enemy_chasing = false
 	if curr_state != State.ATTACKING:
 		start_attacking(_body)
 
 func on_atk_body_exited(_body) -> void:
-	stop_attacking()
+	if is_enemy and is_instance_valid(target_bug) and target_bug:
+		start_chasing(target_bug)
+	else:
+		stop_attacking()
 
 func stop_attacking() -> void:
 	if is_enemy:
@@ -178,5 +178,13 @@ func damage(_value : float, _source) -> void:
 func on_flash_anim_end() -> void:
 	anim.play("idle")
 
+func start_chasing(_bug) -> void:
+	emit_signal("bug_path_request", self, _bug.global_position)
+	is_enemy_chasing = true
+	while is_enemy_chasing:
+		yield(get_tree().create_timer(0.5), "timeout")
+		if is_enemy_chasing and is_instance_valid(_bug):
+			emit_signal("bug_path_request", self, _bug.global_position)
+
 func on_enemy_vision_body_entered(_body) -> void:
-	emit_signal("bug_path_request", self, _body.global_position)
+	start_chasing(_body)
