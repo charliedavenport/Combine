@@ -109,6 +109,11 @@ func move_along_path(_dist) -> void:
 		if dist_to_next_point > 15.0:
 			var vel = (path[0] - last_point) * (_dist / dist_to_next_point)
 			vel = move_and_slide(vel)
+			# check for overlapping enemies
+			var bods = atk_area.get_overlapping_areas()
+			for b in bods:
+				if b.is_enemy != is_enemy:
+					start_attacking(b)
 			is_facing_left = (vel.x < 0)
 			return
 		# The position is past the end of the segment.
