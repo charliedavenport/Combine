@@ -6,7 +6,7 @@ const MIN_SPEED := 10.0
 const MAX_HP := 100.0
 const ENEMY_REACTION_TIME := 0.5
 const INFECTION_RATE := 0.25
-const INFECTION_AMOUNT := 3.0
+const INFECTION_AMOUNT := 2.0
 const PATH_UPDATE_INTERVAL := 0.5
 
 const enemy_sprite = preload("res://ant_spritesheet.png")
@@ -263,7 +263,7 @@ func start_chasing(_bug) -> void:
 	while is_enemy_chasing:
 		path_update_timer.start()
 		yield(path_update_timer, "timeout")
-		if is_enemy_chasing and is_instance_valid(_bug) and not _bug.is_dead:
+		if is_enemy_chasing and is_instance_valid(_bug) and not _bug.is_dead and not _bug.is_enemy:
 			emit_signal("bug_path_request", self, _bug.global_position)
 
 func on_enemy_vision_body_entered(_body) -> void:

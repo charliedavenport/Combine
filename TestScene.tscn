@@ -60,6 +60,41 @@ position = Vector2( 1584, 2010 )
 is_enemy = true
 is_facing_left = true
 
+[node name="EnemyBug20" parent="." instance=ExtResource( 2 )]
+position = Vector2( 2445, 655 )
+is_enemy = true
+
+[node name="EnemyBug21" parent="." instance=ExtResource( 2 )]
+position = Vector2( 3016, 450 )
+is_enemy = true
+is_facing_left = true
+
+[node name="EnemyBug22" parent="." instance=ExtResource( 2 )]
+position = Vector2( 3482, 398 )
+is_enemy = true
+is_facing_left = true
+
+[node name="EnemyBug23" parent="." instance=ExtResource( 2 )]
+position = Vector2( 3268, 536 )
+is_enemy = true
+
+[node name="EnemyBug24" parent="." instance=ExtResource( 2 )]
+position = Vector2( 3411, 1283 )
+is_enemy = true
+is_facing_left = true
+
+[node name="EnemyBug25" parent="." instance=ExtResource( 2 )]
+position = Vector2( 3630, 1131 )
+is_enemy = true
+
+[node name="EnemyBug26" parent="." instance=ExtResource( 2 )]
+position = Vector2( 411, 3003 )
+is_enemy = true
+
+[node name="EnemyBug27" parent="." instance=ExtResource( 2 )]
+position = Vector2( 688, 3127 )
+is_enemy = true
+
 [node name="EnemyBug19" parent="." instance=ExtResource( 2 )]
 position = Vector2( 557, 1731 )
 is_enemy = true
@@ -85,7 +120,14 @@ is_enemy = true
 [node name="EnemyBug10" parent="." instance=ExtResource( 2 )]
 position = Vector2( 1385, 3702 )
 is_enemy = true
-is_facing_left = true
+
+[node name="EnemyBug28" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1575, 3816 )
+is_enemy = true
+
+[node name="EnemyBug29" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1131, 3841 )
+is_enemy = true
 
 [node name="EnemyBug11" parent="." instance=ExtResource( 2 )]
 position = Vector2( 1564, 3367 )
