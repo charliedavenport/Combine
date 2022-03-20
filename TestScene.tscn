@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Bug.tscn" type="PackedScene" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://sound/Flashinmusic_-_Meditation_forest.mp3" type="AudioStream" id=4]
 [ext_resource path="res://GameManager.gd" type="Script" id=5]
 [ext_resource path="res://level.png" type="Texture" id=6]
+[ext_resource path="res://GUI.tscn" type="PackedScene" id=7]
 
 [sub_resource type="NavigationPolygon" id=1]
 vertices = PoolVector2Array( 3982, 1722, 3966, 4005, 3903, 3593, 3735, 2740, 3709, 2418, 3724, 1591, 3858, 3757, 2878, 709, 2127, 493, 1642, 179, 2465, 226, 2969, 649, 2732, 1309, 2812, 1183, 3352, 1012, 3971, 1022, 3956, 1158, 3609, 1395, 3004, 1344, 3564, 3435, 3316, 2962, 1225, 2126, 1215, 1818, 1502, 1586, 2696, 1606, 2908, 1722, 2175, 2175, 1371, 2468, 822, 311, 857, 190, 1411, 513, 1172, 660, 872, 830, 2490, 2715, 2348, 2764, 1562, 2816, 1270, 2695, 1381, 2604, 2194, 2277, 2570, 2529, 3362, 4000, 3586, 3831, 3281, 3712, 3115, 3804, 2964, 3469, 2671, 3617, 2472, 3248, 1038, 2282, 731, 2075, 882, 2231, 560, 2408, 161, 2171, 3014, 2806, 3315, 3531, 2557, 3045, 2621, 2887, 2356, 2817, 2410, 3073, 1583, 2977, 131, 1410, 590, 1375, 1148, 1414, 1225, 1465, 852, 1229, 1163, 1338, 3961, 130, 3976, 412, 3210, 714, 242, 760, 136, 765, 131, 704, 383, 543, 958, 3648, 1250, 3199, 1996, 4026, 958, 3950, 3483, 2373, 3604, 1727, 388, 3254, 247, 3270, 136, 2806, 328, 2685, 595, 1022, 464, 951, 588, 398, 3291, 2579, 3155, 2483, 2681, 1511, 2318, 1460, 3301, 815, 2112, 573, 1479, 1150, 880, 1011, 946, 889, 1196, 760, 1400, 845, 1434, 919, 1940, 881, 1885, 704, 2374, 1012, 2056, 1183, 3629, 805, 3074, 941, 1536, 1178, 1729, 921, 2071, 1294, 1507, 971, 3024, 2418, 2989, 2131, 3341, 1506 )
@@ -14,6 +15,10 @@ outlines = [ PoolVector2Array( 857, 190, 822, 311, 588, 398, 383, 543, 131, 704,
 
 [node name="GameManager" type="Navigation2D"]
 script = ExtResource( 5 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="GUI" parent="CanvasLayer" instance=ExtResource( 7 )]
 
 [node name="NavigationPolygonInstance" type="NavigationPolygonInstance" parent="."]
 position = Vector2( -1, -2 )
@@ -40,16 +45,8 @@ tile_data = PoolIntArray( -2883543, 1, 0, -2883542, 1, 0, -2818007, 1, 0, -28180
 [node name="PlayerCamera" parent="Player" index="0"]
 position = Vector2( 757, 634 )
 
-[node name="GUI" type="Control" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="Bug" parent="." instance=ExtResource( 2 )]
 position = Vector2( 764, 622 )
-atk_damage = 15.0
 
 [node name="EnemyBug5" parent="." instance=ExtResource( 2 )]
 position = Vector2( 1584, 2010 )

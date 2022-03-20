@@ -2,9 +2,11 @@ extends Navigation2D
 class_name GameManager
 
 onready var player = get_node("Player")
+onready var gui = get_node("CanvasLayer/GUI")
 
 var selected_bugs : Array
 var enemy_bugs : Array
+var friendly_bugs : Array
 var selected_enemy
 
 func _ready() -> void:
@@ -21,6 +23,20 @@ func _ready() -> void:
 				enemy_bugs.append(child)
 				child.connect("mouse_entered", self, "on_enemy_mouse_entered", [child])
 				child.connect("mouse_exited", self, "on_enemy_mouse_exited", [child])
+			else:
+				friendly_bugs.append(child)
+	update_gui()
+
+func update_gui() -> void:
+	gui.set_enemy_ants(enemy_bugs.size())
+	gui.set_infected_ants(friendly_bugs.size())
+
+func check_game_over() -> void:
+	if friendly_bugs.size() == 0:
+		gui.game_over(false)
+	elif enemy_bugs.size() == 0:
+		gui.game_over(true)
+
 
 func on_player_select_body_entered(body) -> void:
 	if not player.is_selecting:
@@ -71,13 +87,19 @@ func on_bug_killed(_bug) -> void:
 	if _bug.is_enemy:
 		enemy_bugs.erase(_bug)
 	else:
+		friendly_bugs.erase(_bug)
 		selected_bugs.erase(_bug)
+	check_game_over()
+	update_gui()
 
 func on_bug_infected(_bug) -> void:
 	enemy_bugs.erase(_bug)
+	friendly_bugs.append(_bug)
 	if _bug == selected_enemy:
 		selected_enemy = null
 		_bug.highlight(false)
+	check_game_over()
+	update_gui()
 
 func on_bug_path_request(_bug, _pos) -> void:
 	var path = get_simple_path(_bug.global_position, _pos, true)
