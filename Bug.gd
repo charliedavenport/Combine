@@ -25,6 +25,7 @@ export var is_enemy_patrol : bool
 export var atk_damage := 10.0
 export var atk_rate := 1.0
 export var draw_path := false
+export var is_facing_left : bool
 
 var path : Array
 var target_bug
@@ -36,7 +37,8 @@ signal bug_path_request(_bug, pos)
 
 func _ready() -> void:
 	set_enemy(is_enemy)
-	atk_area.connect("body_entered", self, "on_body_entered")
+	atk_area.connect("body_entered", self, "on_atk_body_entered")
+	atk_area.connect("body_exited", self, "on_atk_body_exited")
 	atk_timer.wait_time = atk_rate
 	anim.play("idle")
 	sprite.material.set_shader_param("line_thickness", 0)
@@ -80,6 +82,8 @@ func _process(delta) -> void:
 func _physics_process(delta) -> void:
 	if curr_state == State.MOVING:
 		move_along_path(MOVE_SPEED)
+	sprite.flip_h = is_facing_left
+	enemy_vision.scale.x = -1 if is_facing_left else 1
 
 func set_state(_value) -> void:
 	pass # TODO
@@ -98,9 +102,10 @@ func move_along_path(_dist) -> void:
 		# The position to move to falls between two points.
 		if dist_to_next_point > 15.0:
 			var vel = (path[0] - last_point) * (_dist / dist_to_next_point)
-			sprite.flip_h = (vel.x < 0)
-			enemy_vision.scale.x = -1 if (vel.x < 0) else 1
+#			sprite.flip_h = (vel.x < 0)
+#			enemy_vision.scale.x = -1 if (vel.x < 0) else 1
 			vel = move_and_slide(vel)
+			is_facing_left = (vel.x < 0)
 #			if path.size() <= 1 and vel.length() < MIN_SPEED and get_slide_count() > 0:
 #				#print('bug stopping because blocked')
 #				break
@@ -138,9 +143,16 @@ func on_target_killed(_bug) -> void:
 	target_bug = null
 #	sprite.texture = idle_sprite
 
-func on_body_entered(body) -> void:
+func on_atk_body_entered(_body) -> void:
 	if curr_state != State.ATTACKING:
-		start_attacking(body)
+		start_attacking(_body)
+
+func on_atk_body_exited(_body) -> void:
+	stop_attacking()
+
+func stop_attacking() -> void:
+	curr_state = State.IDLE
+	target_bug = null
 
 func infect() -> void:
 	hp = 100.0

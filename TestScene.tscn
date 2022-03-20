@@ -39,6 +39,13 @@ tile_data = PoolIntArray( -2883543, 1, 0, -2883542, 1, 0, -2818007, 1, 0, -28180
 [node name="PlayerCamera" parent="Player" index="0"]
 position = Vector2( 757, 634 )
 
+[node name="GUI" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Bug" parent="." instance=ExtResource( 2 )]
 position = Vector2( 764, 622 )
 atk_damage = 15.0
