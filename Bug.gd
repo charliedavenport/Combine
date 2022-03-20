@@ -42,7 +42,8 @@ var target_bug
 var hp : float
 var infect_level : float
 var is_enemy_chasing : bool
-var enemies_to_infect : Array
+var nearby_infected : Array
+var is_being_infected : bool
 
 signal bug_killed(_bug)
 signal bug_infected(_bug)
@@ -63,7 +64,7 @@ func _ready() -> void:
 	infect_level = 0
 	is_enemy_chasing = false
 	particles.emission_sphere_radius = infect_area.get_node("CollisionShape2D").shape.radius
-	enemies_to_infect = []
+	nearby_infected = []
 	spread_infection()
 
 func _draw() -> void:
@@ -79,9 +80,8 @@ func spread_infection() -> void:
 	while true:
 		infect_timer.start()
 		yield(infect_timer, "timeout")
-		for bug in enemies_to_infect:
-			if is_instance_valid(bug) and bug.is_enemy:
-				bug.add_infection(INFECTION_AMOUNT)
+		if nearby_infected.size() > 0:
+			self.add_infection(INFECTION_AMOUNT)
 
 func set_enemy(_value : bool) -> void:
 	is_enemy = _value
@@ -93,8 +93,8 @@ func set_enemy(_value : bool) -> void:
 		sprite.texture = enemy_sprite
 		particles.emitting = false
 		enemy_vision.monitoring = true
-		infect_area.monitoring = false
-		infect_area.visible = false
+		infect_area.monitoring = true
+		infect_area.visible = true
 		if not enemy_vision.is_connected("body_entered", self, "on_enemy_vision_body_entered"):
 			enemy_vision.connect("body_entered", self, "on_enemy_vision_body_entered")
 	else:
@@ -105,8 +105,8 @@ func set_enemy(_value : bool) -> void:
 		sprite.texture = friendly_sprite
 		particles.emitting = true
 		enemy_vision.monitoring = false
-		infect_area.monitoring = true
-		infect_area.visible = true
+		infect_area.monitoring = false
+		infect_area.visible = false
 		if enemy_vision.is_connected("body_entered", self, "on_enemy_vision_body_entered"):
 			enemy_vision.disconnect("body_entered", self, "on_enemy_vision_body_entered")
 
@@ -196,10 +196,10 @@ func on_atk_body_exited(_body) -> void:
 		stop_attacking()
 
 func on_infect_body_entered(_body) -> void:
-	enemies_to_infect.append(_body)
+	nearby_infected.append(_body)
 
 func on_infect_body_exited(_body) -> void:
-	enemies_to_infect.erase(_body)
+	nearby_infected.erase(_body)
 
 func stop_attacking() -> void:
 	if is_enemy:
