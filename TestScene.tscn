@@ -45,6 +45,13 @@ tile_data = PoolIntArray( -2883543, 1, 0, -2883542, 1, 0, -2818007, 1, 0, -28180
 [node name="PlayerCamera" parent="Player" index="0"]
 position = Vector2( 757, 634 )
 
+[node name="GameOverCheckTimer" type="Timer" parent="."]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 4 )
+volume_db = -20.0
+autoplay = true
+
 [node name="Bug" parent="." instance=ExtResource( 2 )]
 position = Vector2( 764, 622 )
 
@@ -117,10 +124,5 @@ is_facing_left = true
 position = Vector2( 3687, 3334 )
 is_enemy = true
 is_facing_left = true
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 4 )
-volume_db = -20.0
-autoplay = true
 
 [editable path="Player"]

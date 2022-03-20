@@ -3,6 +3,7 @@ class_name GameManager
 
 onready var player = get_node("Player")
 onready var gui = get_node("CanvasLayer/GUI")
+onready var game_over_check_timer = get_node("GameOverCheckTimer")
 
 var selected_bugs : Array
 var enemy_bugs : Array
@@ -14,6 +15,7 @@ func _ready() -> void:
 	player.select_area.connect("body_entered", self, "on_player_select_body_entered")
 	player.select_area.connect("body_exited", self, "on_player_select_body_exited")
 	player.connect("move_bugs_to", self, "on_move_bugs_to")
+	player.connect("player_sacrifice_bug", self, "on_sacrifice_bug")
 	for child in get_children():
 		if child is Bug:
 			child.connect("bug_killed", self, "on_bug_killed")
@@ -32,6 +34,9 @@ func update_gui() -> void:
 	gui.set_infected_ants(friendly_bugs.size())
 
 func check_game_over() -> void:
+	game_over_check_timer.wait_time = 0.5
+	game_over_check_timer.start()
+	yield(game_over_check_timer, "timeout")
 	if friendly_bugs.size() == 0:
 		gui.game_over(false)
 	elif enemy_bugs.size() == 0:
@@ -105,3 +110,8 @@ func on_bug_path_request(_bug, _pos) -> void:
 	var path = get_simple_path(_bug.global_position, _pos, true)
 	_bug.path = path
 	_bug.start_moving_along_path()
+
+func on_sacrifice_bug() -> void:
+	if selected_bugs.size() != 1:
+		return
+	selected_bugs[0].sacrifice()

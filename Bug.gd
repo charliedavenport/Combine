@@ -16,7 +16,7 @@ enum State {IDLE, MOVING, ATTACKING}
 var curr_state : int
 
 onready var sprite = get_node("Sprite")
-onready var selected_sprite = get_node("Selected")
+onready var big_mushroom = get_node("BigMushroomSprite")
 onready var infect_area = get_node("InfectArea")
 onready var atk_area = get_node("AttackableArea")
 onready var atk_timer = get_node("AtkTimer")
@@ -230,8 +230,8 @@ func kill() -> void:
 	particles.emitting = false
 	enemy_vision.monitoring = false
 	bug_gui.visible = false
-	set_process(false)
-	set_physics_process(false)
+#	set_process(false)
+#	set_physics_process(false)
 	#queue_free()
 
 func damage(_value : float) -> void:
@@ -245,7 +245,7 @@ func damage(_value : float) -> void:
 func add_infection(_value : float) -> void:
 	if not is_enemy:
 		return
-	infect_level += INFECTION_AMOUNT
+	infect_level += _value
 	bug_gui.set_infection(infect_level)
 	if infect_level >= 100:
 		infect()
@@ -263,8 +263,32 @@ func start_chasing(_bug) -> void:
 	while is_enemy_chasing:
 		path_update_timer.start()
 		yield(path_update_timer, "timeout")
-		if is_enemy_chasing and is_instance_valid(_bug):
+		if is_enemy_chasing and is_instance_valid(_bug) and not _bug.is_dead:
 			emit_signal("bug_path_request", self, _bug.global_position)
 
 func on_enemy_vision_body_entered(_body) -> void:
 	start_chasing(_body)
+
+func sacrifice() -> void:
+	print('sacrificing ' + name)
+	kill()
+	big_mushroom.visible = true
+	particles.emitting = true
+	particles.amount = hp
+	infect_area.monitoring = true
+	infect_area.collision_mask = 4
+#	yield(get_tree(), "physics_frame")
+#	for bod in infect_area.get_overlapping_bodies():
+#		print(bod)
+#		bod.add_infection(100)
+	infect_area.connect("body_entered", self, "sacrifice_infect")
+	atk_timer.start()
+	yield(atk_timer, "timeout")
+	particles.emitting = false
+	infect_area.monitoring = false
+
+func sacrifice_infect(_body) -> void:
+	print('sacrifice infect')
+	print(_body)
+	_body.add_infection(hp)
+	

@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Bug.gd" type="Script" id=1]
 [ext_resource path="res://ant_infected_spritesheet.png" type="Texture" id=2]
-[ext_resource path="res://white.png" type="Texture" id=3]
+[ext_resource path="res://big_mushroom.png" type="Texture" id=3]
 [ext_resource path="res://flash.shader" type="Shader" id=4]
 [ext_resource path="res://spore.png" type="Texture" id=5]
 [ext_resource path="res://infected_color.png" type="Texture" id=6]
@@ -155,10 +155,9 @@ texture = ExtResource( 2 )
 offset = Vector2( 5, 0 )
 hframes = 4
 
-[node name="Selected" type="Sprite" parent="."]
+[node name="BigMushroomSprite" type="Sprite" parent="."]
 visible = false
-scale = Vector2( 1.1, 1.1 )
-z_index = -1
+scale = Vector2( 0.203, 0.203 )
 texture = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -167,6 +166,7 @@ shape = SubResource( 1 )
 [node name="InfectArea" type="Area2D" parent="."]
 collision_layer = 0
 collision_mask = 2
+monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InfectArea"]
 modulate = Color( 0.101961, 0.956863, 0.0313726, 1 )

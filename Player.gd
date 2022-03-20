@@ -12,6 +12,7 @@ const MIN_SELECT_SIZE := 1.0
 
 signal player_begin_select
 signal move_bugs_to(pos)
+signal player_sacrifice_bug
 
 func _ready() -> void:
 	set_process_unhandled_input(true)
@@ -43,3 +44,5 @@ func _unhandled_input(event):
 			select_area.monitoring = false
 	elif event.is_action("RClick") and event.is_pressed():
 		emit_signal("move_bugs_to", mouse_pos)
+	elif event.is_action_pressed("sacrifice_bug"):
+		emit_signal("player_sacrifice_bug")
