@@ -151,7 +151,8 @@ func on_atk_body_exited(_body) -> void:
 	stop_attacking()
 
 func stop_attacking() -> void:
-	curr_state = State.IDLE
+	if is_enemy:
+		curr_state = State.IDLE
 	target_bug = null
 
 func infect() -> void:
